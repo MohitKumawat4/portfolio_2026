@@ -241,9 +241,16 @@ export default function Hero() {
       {/* Shooting Stars - fast, no tail */}
       <ShootingStars />
 
-      {/* Spline 3D Scene - hidden on mobile, responsive positioning */}
-      <div className="hidden md:block absolute top-0 right-0 w-full h-full z-10 translate-x-[55%] lg:translate-x-[45%] xl:translate-x-[40%] 2xl:translate-x-[35%]">
-        <Spline scene="https://prod.spline.design/NV0Oc99COwfNTbxa/scene.splinecode" />
+      {/* Spline 3D Scene - responsive positioning
+          Pushing distinctively further right by increasing container width
+          w-[200%] -> Robot centered at 100% screen width (far right edge)
+          w-[185%] -> Robot centered at 92.5% screen width
+      */}
+      <div className="hidden md:block absolute top-0 left-0 h-full z-10 w-[205%] md:w-[195%] lg:w-[185%] 2xl:w-[180%] pointer-events-none">
+        <Spline
+          className="w-full h-full"
+          scene="https://prod.spline.design/NV0Oc99COwfNTbxa/scene.splinecode"
+        />
       </div>
 
       {/* Sidebar Navigation */}
