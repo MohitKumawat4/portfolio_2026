@@ -575,9 +575,9 @@ function Work() {
                     </span>
                   </div>
 
-                  {/* Bottom row — image grid */}
+                  {/* Bottom row — desktop: split layout, mobile: full card with overlay */}
                   <div className="grid grid-cols-1 md:grid-cols-[2fr_3fr] gap-3">
-                    {/* Left column: screenshot + info */}
+                    {/* Desktop: Left column with screenshot + info */}
                     <div className="hidden md:flex flex-col gap-3">
                       {/* Top: static screenshot */}
                       <div
@@ -612,11 +612,57 @@ function Work() {
                       </div>
                     </div>
 
-                    {/* Right column: auto-scrolling full-page preview */}
-                    <ScrollPreview
-                      src={(project as any).fullImage || project.image}
-                      alt={`${project.title} full preview`}
-                    />
+                    {/* Desktop: Right column with auto-scrolling preview */}
+                    <div className="hidden md:block">
+                      <ScrollPreview
+                        src={(project as any).fullImage || project.image}
+                        alt={`${project.title} full preview`}
+                      />
+                    </div>
+
+                    {/* Mobile: Static card with overlay info */}
+                    <div className="md:hidden relative rounded-[30px] overflow-hidden bg-[#141414]" style={{ height: "70vh", maxHeight: "600px" }}>
+                      {/* Background image */}
+                      <img
+                        src={project.image}
+                        alt={`${project.title} preview`}
+                        loading="lazy"
+                        className="absolute inset-0 w-full h-full object-cover object-top"
+                      />
+
+                      {/* Gradient overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 to-black/90" />
+
+                      {/* Info overlay at bottom */}
+                      <div className="absolute bottom-0 left-0 right-0 p-6 space-y-4">
+                        {/* Type badge */}
+                        <div className="inline-block">
+                          <span className="text-xs text-[#89AACC] uppercase tracking-widest font-medium px-4 py-2 rounded-full border border-white/20 backdrop-blur-md bg-white/5">
+                            {(project as any).type || "Personal Project"}
+                          </span>
+                        </div>
+
+                        {/* Description */}
+                        <p className="text-white/90 text-sm leading-relaxed backdrop-blur-sm bg-black/30 rounded-2xl p-4 border border-white/10">
+                          {(project as any).details || project.description}
+                        </p>
+
+                        {/* Tech stack */}
+                        <div className="flex flex-wrap gap-2">
+                          {((project as any).techStack || project.tags).slice(0, 6).map((tech: string) => (
+                            <span key={tech} className="text-xs text-white/80 border border-white/20 rounded-full px-3 py-1.5 backdrop-blur-md bg-white/5">
+                              {tech}
+                            </span>
+                          ))}
+                        </div>
+
+                        {/* View live button */}
+                        <button className="w-full mt-4 py-4 rounded-full border-2 border-[#D7E2EA] text-[#D7E2EA] font-medium uppercase tracking-widest text-sm backdrop-blur-md bg-white/5 hover:bg-white/10 transition-colors flex items-center justify-center gap-2">
+                          <ExternalLink className="w-4 h-4" />
+                          View Live
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </a>
