@@ -148,10 +148,10 @@ export const personalStats = [
 export const education = [
   {
     id: 1,
-    institution: "Your University Name",
-    degree: "B.Tech in Computer Science",
-    duration: "2020 - 2024",
-    description: "Specialized in Full Stack Development",
+    institution: "Rajasthan Technical University",
+    degree: "Bachelor of Technology in Computer Science and Engineering",
+    duration: "2022 - 2026",
+    description: "CGPA: 8.0",
   },
 ];
 
