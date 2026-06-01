@@ -6,8 +6,10 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
+        disallow: ["/api/"],
       },
     ],
     sitemap: "https://sainiamit.com/sitemap.xml",
+    host: "https://sainiamit.com",
   };
 }

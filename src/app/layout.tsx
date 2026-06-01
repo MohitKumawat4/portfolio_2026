@@ -3,60 +3,34 @@ import Script from "next/script";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Amit Saini | Full Stack Developer, AI Engineer & Web Solutions Expert",
-  description: "Hire Amit Saini — Full stack web & app developer specializing in custom websites, AI integration, WhatsApp Business API, Meta/Facebook/Instagram API, SaaS platforms, admin panels, and end-to-end deployment. Based in India, available worldwide.",
+  metadataBase: new URL("https://sainiamit.com"),
+  title: "Amit Saini — Full Stack Developer & AI Engineer | sainiamit.com",
+  description: "Amit Saini is a Full Stack Developer & AI Engineer from India. Not the singer — the software engineer who builds custom web apps, AI chatbots, WhatsApp Business API integrations, and SaaS platforms. Hire for Next.js, React, Node.js, Python projects.",
   keywords: [
-    "Amit Saini",
     "Amit Saini developer",
-    "hire web developer India",
-    "full stack developer",
-    "freelance web developer",
-    "custom website development",
-    "web application developer",
-    "AI integration developer",
+    "Amit Saini software engineer",
+    "Amit Kumar Saini",
+    "Amit Saini full stack developer",
+    "Amit Saini AI engineer",
+    "Amit Saini portfolio",
+    "Amit Saini web developer India",
+    "Amit Saini Jaipur",
+    "Amit Saini Rajasthan developer",
+    "sainiamit.com",
+    "hire full stack developer India",
+    "hire full stack developer Jaipur",
+    "Next.js developer India",
+    "React developer freelance",
     "AI chatbot developer",
-    "WhatsApp API developer",
-    "WhatsApp Business API integration",
-    "Meta API integration",
-    "Facebook API developer",
-    "Instagram API integration",
-    "Next.js developer",
-    "React developer",
-    "Node.js developer",
-    "Python developer",
-    "TypeScript developer",
-    "SaaS development",
-    "custom admin panel",
-    "CRM development",
-    "e-commerce development",
-    "Shopify developer",
-    "mobile app development",
-    "React Native developer",
-    "Flutter developer",
-    "cloud deployment AWS",
-    "Vercel deployment",
-    "Supabase developer",
-    "PostgreSQL developer",
-    "MongoDB developer",
-    "API development",
-    "REST API developer",
-    "GraphQL developer",
-    "payment gateway integration",
-    "Razorpay integration",
-    "Stripe integration",
-    "website design India",
-    "hire developer for startup",
-    "MVP development",
-    "automation developer",
-    "N8N automation",
-    "workflow automation",
-    "DevOps engineer",
-    "Docker Kubernetes",
-    "CI/CD pipeline",
-    "enterprise web solutions",
-    "digital transformation",
-    "software engineer India",
-    "portfolio Amit Saini",
+    "WhatsApp Business API developer",
+    "SaaS developer India",
+    "Node.js Python developer",
+    "freelance web developer India",
+    "freelance web developer Jaipur",
+    "custom web application developer",
+    "Amit Saini programmer",
+    "Amit Saini coder",
+    "Amit Saini GitHub",
   ],
   authors: [{ name: "Amit Saini", url: "https://sainiamit.com" }],
   creator: "Amit Saini",
@@ -76,29 +50,34 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: "https://sainiamit.com",
-    siteName: "Amit Saini — Developer Portfolio",
-    title: "Amit Saini | Full Stack Developer, AI Engineer & Web Solutions Expert",
-    description: "Custom web & app development, AI chatbots, WhatsApp/Meta API integration, SaaS platforms, admin panels. Hire me for end-to-end solutions.",
-    images: [
-      {
-        url: "https://sainiamit.com/logo.png",
-        width: 512,
-        height: 512,
-        alt: "Amit Saini - Full Stack Developer",
-      },
-    ],
+    siteName: "Amit Saini — Full Stack Developer",
+    title: "Amit Saini — Full Stack Developer & AI Engineer",
+    description: "Software engineer building web apps, AI integrations, and SaaS platforms. Not the singer — the developer. Based in India, available worldwide.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Amit Saini | Full Stack Developer & AI Engineer",
-    description: "Custom web development, AI integration, WhatsApp API, Meta API. Hire me for your next project.",
-    images: ["https://sainiamit.com/logo.png"],
+    title: "Amit Saini — Full Stack Developer & AI Engineer",
+    description: "Software engineer building web apps, AI integrations, and SaaS platforms. Based in India.",
     creator: "@AmitSaini9086",
   },
   alternates: {
     canonical: "https://sainiamit.com",
   },
   category: "Technology",
+  formatDetection: {
+    email: true,
+    address: true,
+    telephone: true,
+  },
+  other: {
+    "google-adsense-account": "ca-pub-6830060544242264",
+    "profile:first_name": "Amit",
+    "profile:last_name": "Saini",
+    "profile:username": "amitsaini-9",
+    "contact:phone_number": "+91 95211 53320",
+    "contact:email": "amitsainiwork9@gmail.com",
+    "contact:address": "Jaipur, Rajasthan, India",
+  },
 };
 
 export default function RootLayout({
@@ -109,15 +88,26 @@ export default function RootLayout({
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Person",
+    "@id": "https://sainiamit.com/#person",
     name: "Amit Saini",
+    alternateName: ["Amit Kumar Saini", "Sainiamit"],
+    givenName: "Amit",
+    familyName: "Saini",
     url: "https://sainiamit.com",
     image: "https://sainiamit.com/logo.png",
     jobTitle: "Full Stack Developer & AI Engineer",
-    description: "Full stack web & app developer specializing in custom websites, AI integration, WhatsApp Business API, Meta API, SaaS platforms, and end-to-end deployment.",
+    description: "Amit Saini is a software engineer and full stack developer from Jaipur, Rajasthan, India specializing in web applications, AI integration, and SaaS platforms. This is the developer Amit Saini, not the Haryanvi singer.",
     email: "amitsainiwork9@gmail.com",
     telephone: "+919521153320",
+    nationality: { "@type": "Country", name: "India" },
+    alumniOf: {
+      "@type": "EducationalOrganization",
+      name: "B.Tech Computer Science",
+    },
     address: {
       "@type": "PostalAddress",
+      addressLocality: "Jaipur",
+      addressRegion: "Rajasthan",
       addressCountry: "IN",
     },
     sameAs: [
@@ -127,60 +117,80 @@ export default function RootLayout({
       "https://x.com/AmitSaini9086",
     ],
     knowsAbout: [
-      "Web Development",
-      "Mobile App Development",
-      "AI Integration",
-      "ChatGPT Integration",
-      "WhatsApp Business API",
-      "Meta API",
-      "Facebook API",
-      "Instagram API",
+      "Full Stack Web Development",
+      "Artificial Intelligence",
+      "Software Engineering",
       "Next.js",
       "React",
       "Node.js",
       "Python",
       "TypeScript",
-      "PostgreSQL",
-      "MongoDB",
-      "AWS",
-      "Docker",
-      "Supabase",
+      "WhatsApp Business API",
       "SaaS Development",
-      "Admin Panel Development",
-      "Payment Gateway Integration",
+      "Cloud Computing",
+      "Machine Learning",
     ],
-    offers: {
-      "@type": "Offer",
-      name: "Web & App Development Services",
-      description: "Custom web development, AI chatbots, API integrations, SaaS platforms, mobile apps, cloud deployment",
-      availability: "https://schema.org/InStock",
+    hasOccupation: {
+      "@type": "Occupation",
+      name: "Software Developer",
+      occupationalCategory: "15-1252.00",
+      skills: "JavaScript, TypeScript, Python, React, Next.js, Node.js, AI/ML, AWS, Docker",
     },
+    worksFor: {
+      "@type": "Organization",
+      name: "Intap Studio Pvt Ltd",
+      url: "https://intapstudio.com",
+    },
+  };
+
+  const websiteJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": "https://sainiamit.com/#website",
+    url: "https://sainiamit.com",
+    name: "Amit Saini — Full Stack Developer Portfolio",
+    description: "Portfolio of Amit Saini, a software engineer specializing in full stack development and AI engineering.",
+    publisher: { "@id": "https://sainiamit.com/#person" },
+    inLanguage: "en-US",
   };
 
   const servicesJsonLd = {
     "@context": "https://schema.org",
-    "@type": "ItemList",
-    name: "Services by Amit Saini",
+    "@type": "ProfessionalService",
+    "@id": "https://sainiamit.com/#services",
+    name: "Amit Saini — Web Development Services",
+    provider: { "@id": "https://sainiamit.com/#person" },
+    areaServed: { "@type": "Country", name: "Worldwide" },
+    serviceType: "Software Development",
+    hasOfferCatalog: {
+      "@type": "OfferCatalog",
+      name: "Development Services",
+      itemListElement: [
+        { "@type": "Offer", itemOffered: { "@type": "Service", name: "Custom Website Development", description: "Full-stack web applications using Next.js, React, Node.js, Python" } },
+        { "@type": "Offer", itemOffered: { "@type": "Service", name: "AI Integration & Chatbots", description: "ChatGPT, Claude, Gemini AI integration, conversational AI, automation" } },
+        { "@type": "Offer", itemOffered: { "@type": "Service", name: "WhatsApp Business API Integration", description: "WhatsApp chatbots, CRM, marketing automation, business messaging" } },
+        { "@type": "Offer", itemOffered: { "@type": "Service", name: "SaaS Platform Development", description: "Multi-tenant applications, subscription billing, admin dashboards" } },
+        { "@type": "Offer", itemOffered: { "@type": "Service", name: "Cloud Deployment & DevOps", description: "AWS, Vercel, Docker, CI/CD pipelines, server management" } },
+      ],
+    },
+  };
+
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "Service", position: 1, name: "Custom Website Development", description: "Full-stack web applications using Next.js, React, Node.js, Python" },
-      { "@type": "Service", position: 2, name: "AI Integration & Chatbots", description: "ChatGPT, Claude, Gemini AI integration, conversational AI, automation" },
-      { "@type": "Service", position: 3, name: "WhatsApp Business API", description: "WhatsApp chatbots, CRM, marketing automation, business messaging" },
-      { "@type": "Service", position: 4, name: "Meta & Social API Integration", description: "Facebook, Instagram, Meta Business Suite API development" },
-      { "@type": "Service", position: 5, name: "Mobile App Development", description: "React Native, Flutter apps for iOS and Android" },
-      { "@type": "Service", position: 6, name: "SaaS Platform Development", description: "Multi-tenant applications, subscription billing, admin dashboards" },
-      { "@type": "Service", position: 7, name: "E-commerce Solutions", description: "Custom stores, Shopify, payment integration with Razorpay/Stripe" },
-      { "@type": "Service", position: 8, name: "Cloud Deployment & DevOps", description: "AWS, Vercel, Docker, CI/CD pipelines, server management" },
-      { "@type": "Service", position: 9, name: "Admin Panel & Dashboard", description: "Custom admin panels, analytics dashboards, CRM/ERP systems" },
-      { "@type": "Service", position: 10, name: "API Development", description: "REST APIs, GraphQL, webhook integrations, third-party API connections" },
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://sainiamit.com" },
     ],
   };
 
   return (
     <html lang="en">
       <head>
-        <meta name="google-adsense-account" content="ca-pub-6830060544242264" />
         <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+        <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#0a0a0a" />
         <link rel="canonical" href="https://sainiamit.com" />
         <link rel="preconnect" href="https://stream.mux.com" />
@@ -192,7 +202,15 @@ export default function RootLayout({
         />
         <script
           type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(servicesJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
         />
       </head>
       <body className="antialiased">
