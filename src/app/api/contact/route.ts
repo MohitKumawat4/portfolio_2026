@@ -1,16 +1,6 @@
 import { NextRequest } from "next/server";
 import nodemailer from "nodemailer";
 
-const transporter = nodemailer.createTransport({
-  host: "smtp.hostinger.com",
-  port: 465,
-  secure: true,
-  auth: {
-    user: "hello@sainiamit.com",
-    pass: "a8075DBF@1",
-  },
-});
-
 export async function POST(request: NextRequest) {
   try {
     const { email, name } = await request.json();
@@ -19,9 +9,32 @@ export async function POST(request: NextRequest) {
       return Response.json({ error: "Name and email required" }, { status: 400 });
     }
 
+    // Validate environment variables
+    const smtpHost = process.env.SMTP_HOST;
+    const smtpPort = process.env.SMTP_PORT;
+    const smtpUser = process.env.SMTP_USER;
+    const smtpPass = process.env.SMTP_PASS;
+
+    if (!smtpHost || !smtpPort || !smtpUser || !smtpPass) {
+      console.error("Missing SMTP configuration");
+      return Response.json({ error: "Email service not configured" }, { status: 500 });
+    }
+
+    // Create transporter with environment variables
+    const transporter = nodemailer.createTransport({
+      host: smtpHost,
+      port: parseInt(smtpPort),
+      secure: true,
+      auth: {
+        user: smtpUser,
+        pass: smtpPass,
+      },
+    });
+
+    // Send email to both hello@sainiamit.com and amitsainiwork9@gmail.com
     await transporter.sendMail({
       from: '"Amit Saini - Portfolio" <hello@sainiamit.com>',
-      to: "hello@sainiamit.com",
+      to: "hello@sainiamit.com, amitsainiwork9@gmail.com",
       subject: `New hire inquiry from ${name}`,
       html: `
         <h2>New Contact</h2>
@@ -32,6 +45,7 @@ export async function POST(request: NextRequest) {
       `,
     });
 
+    // Send confirmation email to the user
     await transporter.sendMail({
       from: '"Amit Saini" <hello@sainiamit.com>',
       to: email,
@@ -51,6 +65,6 @@ export async function POST(request: NextRequest) {
     return Response.json({ success: true });
   } catch (error: any) {
     console.error("Email error:", error);
-    return Response.json({ error: "Failed to send" }, { status: 500 });
+    return Response.json({ error: "Failed to send", details: error.message }, { status: 500 });
   }
 }
