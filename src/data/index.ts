@@ -5,13 +5,13 @@
 
 // Personal Information
 export const personalInfo = {
-  name: "Amit Saini",
-  title: "Full Stack Developer & AI Engineer",
-  subtitle: "Web & AI Solutions",
-  email: "hello@sainiamit.com",
-  location: "India",
+  name: "Mohit Kumawat",
+  title: "Front-end Developer",
+  subtitle: "Modern Web Development",
+  email: "mohitkumawat23564@gmail.com",
+  location: "Jaipur, India",
   bio: "Building custom web solutions, AI integrations, and automation systems. From concept to deployment.",
-  resumeUrl: "/resume.pdf",
+  resumeUrl: "/Mohit-Resume-2026.pdf",
 };
 
 // Navigation Items
@@ -28,50 +28,31 @@ export const navItems = [
 // Skills
 export const skills = [
   {
+    category: "Programming Languages",
+    items: ["TypeScript", "JavaScript", "Java"],
+  },
+  {
     category: "Frontend",
     items: [
+      "NextJS",
+      "React",
       "HTML",
       "CSS",
-      "JavaScript",
-      "TypeScript",
-      "React",
-      "Next.js",
       "Tailwind CSS",
-      "Three.js",
       "Bootstrap"
     ],
   },
   {
     category: "Backend",
-    items: ["Node.js", "Express", "Python", "Java", "REST APIs"],
+    items: ["Node.js", "Express.js"],
   },
   {
-    category: "Database & Cloud",
-    items: [
-      "MongoDB",
-      "PostgreSQL",
-      "Prisma",
-      "Supabase",
-      "Firebase",
-      "Neon",
-      "Convex",
-      "AWS",
-      "Google Cloud"
-    ],
+    category: "Database",
+    items: ["MongoDB", "PostgreSQL", "Supabase"],
   },
   {
-    category: "AI & Automation",
-    items: ["Machine Learning", "N8N AI Automation", "AI Agentic Coding"],
-  },
-  {
-    category: "Tools & Integrations",
-    items: [
-      "Git",
-      "GitHub",
-      "Clerk",
-      "Shopify Extensions",
-      "Whatsapp Business API"
-    ],
+    category: "Other Skills",
+    items: ["Problem-Solving", "Team Collaboration", "Communication"],
   },
 ];
 
@@ -121,37 +102,37 @@ export const projects = [
   },
   {
     id: 4,
-    title: "Buildera",
-    description: "A web development agency landing page with cinematic video backgrounds, liquid glass effects, and smooth scroll animations.",
-    image: "/projects/buildera.png",
-    fullImage: "/projects/buildera-full.png",
-    tags: ["Next.js", "Framer Motion", "Tailwind", "Frontend"],
-    liveUrl: "https://buildera.sainiamit.com/",
+    title: "Resume Persona",
+    description: "Resume builder with premium templates and user friendly UI.",
+    image: "/projects/resume-persona.png",
+    fullImage: "/projects/resume-persona-full.png",
+    tags: ["NextJS", "React", "TailwindCSS"],
+    liveUrl: "https://resume-persona.vercel.app/",
     githubUrl: "",
     featured: true,
-    techStack: ["Next.js 16", "TypeScript", "Tailwind CSS", "Framer Motion", "HLS.js", "Vercel"],
-    details: "Frontend-only landing page with immersive video backgrounds, liquid glass UI effects, scroll-driven animations, and a contact form with email integration.",
+    techStack: ["NextJS", "React", "TailwindCSS", "TypeScript", "Shadcn", "AceternityUI Components", "Supabase"],
+    details: "Built a resume builder with premium templates and user friendly ui.",
     type: "Personal Project",
   },
 ];
 
-// Career Start Date (June 6th, 2024)
-export const CAREER_START_DATE = new Date("2024-06-06");
+// Career Start Date
+export const CAREER_START_DATE = new Date("2024-07-01");
 
 // Personal Stats
 export const personalStats = [
   { label: "Experience", value: "Dynamic" }, // Calculated dynamically in component
-  { label: "Projects", value: "10+" },
-  { label: "Clients", value: "5+" },
+  { label: "Projects", value: "4+" },
+  { label: "Internships", value: "3" },
 ];
 
 export const education = [
   {
     id: 1,
-    institution: "Rajasthan Technical University",
-    degree: "Bachelor of Technology in Computer Science and Engineering",
-    duration: "2022 - 2026",
-    description: "CGPA: 8.0",
+    institution: "Sri Balaji College of Engineering and Technology",
+    degree: "B.Tech in Computer Science and Engineering",
+    duration: "Sept 2022 - Sept 2026",
+    description: "Certifications: Programming in Java (NPTEL, IIT Kharagpur) | Google Cloud Computing Foundations (NPTEL, IIT Kharagpur)",
   },
 ];
 
@@ -159,21 +140,30 @@ export const education = [
 export const experiences = [
   {
     id: 1,
-    company: "Intap Studio Pvt Ltd",
-    role: "Software Development Engineer",
-    startDate: "May 2026",
-    duration: "Present",
-    description: "Promoted to full-time SDE. Building and scaling Photozoot AI — an AI-powered image processing platform. Leading frontend architecture, AI pipeline integration, and production deployments.",
-    technologies: ["Next.js 16", "TypeScript", "AI/ML", "Python", "AWS"],
+    company: "Learn & Build",
+    role: "Web Development Intern",
+    startDate: "Jul 2024",
+    duration: "Sept 2024",
+    description: "Worked as a web development intern in Jaipur.",
+    technologies: ["Web Development"],
   },
   {
     id: 2,
-    company: "Intap Studio Pvt Ltd",
+    company: "Sunrays Image Pvt LTD",
     role: "Software Developer Intern",
-    startDate: "July 2025",
-    duration: "10 months",
-    description: "Built core features for Photozoot AI from ground up. Developed the full-stack web application, integrated AI models for image enhancement, implemented real-time processing pipelines, and deployed to production.",
-    technologies: ["React", "Next.js", "Node.js", "Supabase", "AI Integration", "Vercel"],
+    startDate: "Nov 2025",
+    duration: "Jan 2026",
+    description: "Worked as a Software Developer Intern.",
+    technologies: ["Software Development"],
+  },
+  {
+    id: 3,
+    company: "LawDocs.in",
+    role: "Software Developer Intern",
+    startDate: "Feb 2026",
+    duration: "Present",
+    description: "Working on RBI compliance software and loan origination system.",
+    technologies: ["Compliance Software", "Loan Origination"],
   },
 ];
 
@@ -190,9 +180,9 @@ export const testimonials = [
 
 // SEO Metadata
 export const seoConfig = {
-  title: "Amit Saini | Full Stack Developer & AI Engineer",
-  description: "Hire Amit Saini — Full stack web & app developer specializing in custom websites, AI integration, WhatsApp Business API, Meta API, SaaS platforms, and deployment.",
-  keywords: ["Amit Saini", "full stack developer", "AI engineer", "web developer India", "WhatsApp API", "Meta API", "hire developer"],
+  title: "Mohit Kumawat | Front-end Developer",
+  description: "Portfolio of Mohit Kumawat — Front-end developer specializing in Next.js, React, and modern web development.",
+  keywords: ["Mohit Kumawat", "Front-end Developer", "Web Developer", "Next.js", "React", "India"],
   ogImage: "/logo.png",
-  siteUrl: "https://sainiamit.com",
+  siteUrl: "https://yourwebsite.com",
 };

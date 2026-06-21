@@ -1,11 +1,14 @@
 "use client";
 
-import { useRef, useEffect, useState } from "react";
-import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
+import React, { useRef, useEffect, useState, Suspense, lazy } from "react";
+import { motion, AnimatePresence, useScroll, useTransform, useMotionValueEvent } from "framer-motion";
 import { ArrowRight, Send, Loader2, Check, Heart, Coffee, ExternalLink } from "lucide-react";
 import Script from "next/script";
 import { personalInfo, skills, projects, experiences, education } from "@/data";
 import * as analytics from "@/lib/analytics";
+import { MatrixRain } from "@/components/ui/matrix-rain";
+import { CoffeeBeansBg } from "@/components/ui/coffee-beans-bg";
+import { NetworkBg } from "@/components/ui/network-bg";
 
 declare global {
   interface Window { Razorpay: any; }
@@ -102,18 +105,46 @@ function LoadingScreen({ onComplete }: { onComplete: () => void }) {
 
 // Navbar
 function Navbar() {
+  const { scrollY } = useScroll();
+  const [hidden, setHidden] = useState(false);
+  const isHidden = useRef(false);
+
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    const previous = scrollY.getPrevious() ?? 0;
+    
+    if (latest > previous && latest > 150) {
+      if (!isHidden.current) {
+        isHidden.current = true;
+        setHidden(true);
+      }
+    } else {
+      if (isHidden.current) {
+        isHidden.current = false;
+        setHidden(false);
+      }
+    }
+  });
+
   const links = ["About", "Skills", "Work", "Experience", "Hire", "Support"];
   return (
-    <nav className="fixed top-6 left-0 right-0 z-50 flex justify-center px-4">
+    <motion.nav 
+      variants={{
+        visible: { y: 0, opacity: 1 },
+        hidden: { y: "-150%", opacity: 0 }
+      }}
+      animate={hidden ? "hidden" : "visible"}
+      transition={{ duration: 0.35, ease: "easeInOut" }}
+      className="fixed top-6 left-0 right-0 z-50 flex justify-center px-4"
+    >
       <div className="inline-flex items-center gap-1 rounded-full backdrop-blur-xl border border-white/[0.12] bg-white/[0.04] px-2 py-2 shadow-[inset_0_1px_1px_rgba(255,255,255,0.08),0_4px_20px_rgba(0,0,0,0.3)]">
         <div className="relative w-9 h-9">
           {/* Rotating gradient ring */}
           <div className="absolute inset-0 rounded-full accent-gradient" style={{ animation: "orbit-spin 4s linear infinite" }} />
           {/* Subtle light leak glow */}
           <div className="absolute -inset-1 rounded-full opacity-25 blur-sm accent-gradient" style={{ animation: "orbit-spin 4s linear infinite" }} />
-          {/* Static inner circle with text */}
-          <div className="absolute inset-[2px] rounded-full bg-[#0a0a0a] flex items-center justify-center z-10">
-            <span className="text-[13px] font-display italic tracking-tighter text-white">AS</span>
+          {/* Static inner circle with logo */}
+          <div className="absolute inset-[2px] rounded-full bg-[#0a0a0a] flex items-center justify-center z-10 overflow-hidden">
+            <img src="/logo.png" alt="Mohit Kumawat" className="w-full h-full object-cover" />
           </div>
         </div>
         <div className="w-px h-5 bg-[#1f1f1f] mx-1 hidden md:block" />
@@ -128,7 +159,7 @@ function Navbar() {
         ))}
         <div className="w-px h-5 bg-[#1f1f1f] mx-1 hidden md:block" />
         <a
-          href="https://wa.me/919521153320"
+          href="https://wa.me/919772777565"
           target="_blank"
           rel="noopener noreferrer"
           className="text-xs px-4 py-2 rounded-full text-[#888] hover:text-[#25D366] transition-all flex items-center gap-2"
@@ -136,7 +167,7 @@ function Navbar() {
           <WhatsAppIcon className="w-4 h-4" /> <span className="hidden md:inline">Say hi</span>
         </a>
       </div>
-    </nav>
+    </motion.nav>
   );
 }
 
@@ -150,11 +181,12 @@ function Hero() {
   const roles = ["Full-Stack", "AI Engineer", "Problem Solver"];
   const [roleIndex, setRoleIndex] = useState(0);
   const [videoReady, setVideoReady] = useState(false);
+  const [isFading, setIsFading] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => setRoleIndex((i) => (i + 1) % roles.length), 2000);
     return () => clearInterval(interval);
-  }, []);
+  }, [roles.length]);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -176,12 +208,13 @@ function Hero() {
   }, []);
 
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden">
+    <section className="relative min-h-screen flex items-end bg-[#0a0a0a] overflow-hidden">
       {/* Poster shown instantly while video loads */}
       <div
         className={`absolute inset-0 z-0 bg-cover bg-center transition-opacity duration-1000 ${videoReady ? "opacity-0" : "opacity-100"}`}
         style={{ backgroundImage: `url('${MUX_POSTER}')` }}
       />
+      {/* HLS Video Background */}
       <video
         ref={videoRef}
         autoPlay
@@ -189,19 +222,38 @@ function Hero() {
         muted
         playsInline
         preload="auto"
+        onTimeUpdate={(e) => {
+          const v = e.currentTarget;
+          // Fade to black in the last 1.2 seconds, and fade back in during the first 0.5 seconds
+          if (v.duration && v.duration - v.currentTime < 1.2) {
+            setIsFading(true);
+          } else if (v.currentTime < 0.5) {
+            setIsFading(true);
+          } else {
+            setIsFading(false);
+          }
+        }}
         className={`absolute top-1/2 left-1/2 min-w-full min-h-full -translate-x-1/2 -translate-y-1/2 object-cover z-0 transition-opacity duration-1000 ${videoReady ? "opacity-100" : "opacity-0"}`}
       />
-      <div className="absolute inset-0 bg-black/20 z-[1]" />
-      <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-[#0a0a0a] to-transparent z-[2]" />
+      
+      {/* Seamless Loop Fade Overlay */}
+      <div 
+        className={`absolute inset-0 bg-[#0a0a0a] z-[1] pointer-events-none transition-opacity duration-[800ms] ease-in-out ${isFading ? "opacity-100" : "opacity-0"}`} 
+      />
+      
+      {/* Dark overlay */}
+      <div className="absolute inset-0 bg-black/40 z-[1] pointer-events-none" />
+      <div className="absolute inset-x-0 bottom-0 h-64 bg-gradient-to-t from-[#0a0a0a] to-transparent z-[2] pointer-events-none" />
 
-      <div className="relative z-10 text-center px-6 max-w-4xl">
-        <p className="text-xs text-[#888] uppercase tracking-[0.3em] mb-8 animate-fade-rise">
+      {/* Content container anchored to bottom-left */}
+      <div className="relative z-10 pointer-events-none w-full max-w-[90%] sm:max-w-md lg:max-w-2xl px-6 md:px-10 pb-12 md:pb-16 pt-32">
+        <p className="text-xs text-[#888] uppercase tracking-[0.3em] mb-4 animate-fade-rise" style={{ animationDelay: "0.2s" }}>
           COLLECTION '26
         </p>
-        <h1 className="text-6xl md:text-8xl lg:text-9xl font-display italic leading-[0.9] tracking-tight text-white mb-6 animate-fade-rise-1">
+        <h1 className="text-[clamp(3rem,8vw,6rem)] font-display italic leading-[0.9] tracking-tight text-white mb-4 animate-fade-rise opacity-0" style={{ animationDelay: "0.4s", animationFillMode: "forwards" }}>
           {personalInfo.name}
         </h1>
-        <p className="text-lg md:text-2xl text-[#888] mb-10 animate-fade-rise-2">
+        <p className="text-[clamp(1.125rem,2.5vw,1.875rem)] text-[#888] mb-6 font-light animate-fade-rise opacity-0" style={{ animationDelay: "0.55s", animationFillMode: "forwards" }}>
           A{" "}
           <AnimatePresence mode="wait">
             <motion.span
@@ -217,27 +269,16 @@ function Hero() {
           </AnimatePresence>
           {" "}based in India.
         </p>
-        <p className="text-sm text-[#888] max-w-md mx-auto leading-relaxed mb-12 animate-fade-rise-3">
+        <p className="text-[clamp(0.875rem,1.5vw,1.25rem)] text-[#888] font-light leading-relaxed mb-8 animate-fade-rise opacity-0" style={{ animationDelay: "0.7s", animationFillMode: "forwards" }}>
           {personalInfo.bio}
         </p>
-        <div className="flex items-center justify-center gap-4 animate-fade-rise-3">
-          <a href="#work" className="px-7 py-3.5 bg-white text-black text-sm rounded-full hover:scale-105 transition-transform">
+        <div className="flex flex-wrap gap-3 font-bold animate-fade-rise opacity-0" style={{ animationDelay: "0.85s", animationFillMode: "forwards" }}>
+          <a href="#work" className="pointer-events-auto px-6 py-3 md:px-8 md:py-4 bg-white text-black text-sm rounded-sm hover:brightness-90 transition-all active:scale-[0.97]">
             See Work
           </a>
-          <a href="#hire" className="px-7 py-3.5 bg-[#0a0a0a] text-white text-sm rounded-full border-2 border-[#1f1f1f] hover:border-[#4E85BF] transition-colors">
+          <a href="#hire" className="pointer-events-auto px-6 py-3 md:px-8 md:py-4 bg-transparent text-white border border-[#1f1f1f] text-sm rounded-sm hover:border-[#4E85BF] transition-colors active:scale-[0.97]">
             Hire Me
           </a>
-        </div>
-      </div>
-
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2">
-        <span className="text-xs text-[#888] uppercase tracking-[0.2em]">Scroll</span>
-        <div className="w-px h-10 bg-[#1f1f1f] relative overflow-hidden">
-          <motion.div
-            className="w-full h-2 bg-white/60 rounded-full"
-            animate={{ y: [0, 32, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-          />
         </div>
       </div>
     </section>
@@ -247,32 +288,27 @@ function Hero() {
 // About Section
 function About() {
   return (
-    <section id="about" className="relative py-32 md:py-44 px-6 border-t border-[#1f1f1f] overflow-hidden">
+    <section id="about" className="relative py-20 md:py-28 px-6 border-t border-[#1f1f1f] overflow-hidden">
       <SectionVideoBg src="/assets/about-bg.mp4" fallback="/about-bg.png" />
 
       <div className="max-w-6xl mx-auto relative z-10">
         <div className="grid md:grid-cols-2 gap-12 md:gap-20 items-center">
-          {/* Left: Video */}
+          {/* Left: Matrix Video Container */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="relative aspect-square md:aspect-[4/5] overflow-hidden rounded-[2rem]"
+            className="relative aspect-square overflow-hidden rounded-[2rem]"
           >
             <video
               autoPlay
               loop
               muted
               playsInline
-              className="absolute inset-0 w-full h-full object-cover"
-            >
-              <source
-                src="/assets/about-video.mp4"
-                type="video/mp4"
-              />
-            </video>
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent" />
+              className="absolute inset-0 w-full h-full object-cover z-0"
+              src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260514_135830_bb6491d1-9b66-4aec-9722-13b4dfe3fb46.mp4"
+            />
           </motion.div>
 
           {/* Right: Text */}
@@ -284,22 +320,22 @@ function About() {
           >
             <span className="text-xs text-[#888] uppercase tracking-[0.3em]">About</span>
 
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-display italic text-white leading-[1.1] mt-6">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-display italic text-white leading-[1.15] mt-4">
               I craft digital experiences that combine cutting-edge technology with{" "}
               <span className="accent-gradient-text">thoughtful design.</span>
             </h2>
 
-            <p className="text-[#888] leading-relaxed mt-8">
+            <p className="text-[#888] text-sm leading-relaxed mt-5">
               From custom SaaS platforms and AI chatbots to WhatsApp Business API integrations — I handle the full lifecycle.
               Every line of code serves a purpose. Every feature drives real value.
             </p>
 
-            <p className="text-[#888] leading-relaxed mt-4">
+            <p className="text-[#888] text-sm leading-relaxed mt-3">
               I believe in clean architecture, fast iteration, and shipping products that actually work in production — not just in demos.
             </p>
 
             {/* Specs */}
-            <div className="mt-12 space-y-4 border-t border-[#1f1f1f] pt-8">
+            <div className="mt-8 space-y-3 border-t border-[#1f1f1f] pt-6">
               {[
                 { label: "Stack", value: "React, Next.js, Node, Python" },
                 { label: "Focus", value: "AI Integration & Full-Stack" },
@@ -470,6 +506,7 @@ function SectionVideoBg({ src, fallback }: { src: string; fallback?: string }) {
         loop
         muted
         playsInline
+        preload="none"
         className="absolute inset-0 w-full h-full object-cover z-0 opacity-50"
         poster={fallback}
       >
@@ -540,7 +577,7 @@ function Work() {
           <div
             key={project.id}
             className="sticky mb-4"
-            style={{ top: `calc(6rem + ${i * 28}px)`, zIndex: 10 + i }}
+            style={{ top: `calc(1.5rem + ${i * 28}px)`, zIndex: 10 + i }}
           >
             <motion.div
               initial={{ y: 100, opacity: 0 }}
@@ -663,83 +700,84 @@ function ExperienceSection() {
           </h2>
         </motion.div>
 
-        {/* Company Badge */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="text-center mb-20"
-        >
-          <div className="inline-flex items-center gap-4 px-8 py-4 rounded-full border border-[#1f1f1f] bg-[#0a0a0a]/80 backdrop-blur-sm">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#89AACC] to-[#4E85BF] flex items-center justify-center">
-              <span className="text-sm font-bold text-white">IS</span>
-            </div>
-            <div className="text-left">
-              <p className="text-white font-medium">Intap Studio Pvt Ltd</p>
-              <p className="text-xs text-[#888]">Photozoot AI — Image Processing Platform</p>
-            </div>
-          </div>
-        </motion.div>
 
         {/* Timeline */}
-        <div className="relative">
-          {/* Horizontal line */}
+        <div className="relative mt-12 md:mt-20 max-w-4xl mx-auto">
+          {/* Vertical line */}
           <motion.div
-            initial={{ scaleX: 0 }}
-            whileInView={{ scaleX: 1 }}
+            initial={{ scaleY: 0 }}
+            whileInView={{ scaleY: 1 }}
             viewport={{ once: true }}
-            transition={{ duration: 1.2, ease: "easeOut" }}
-            className="absolute top-1/2 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#4E85BF]/50 to-transparent origin-left hidden md:block"
+            transition={{ duration: 1.5, ease: "easeOut" }}
+            className="absolute top-0 bottom-0 left-[31px] md:left-1/2 w-px bg-gradient-to-b from-transparent via-[#4E85BF]/50 to-transparent origin-top"
           />
 
-          <div className="grid md:grid-cols-2 gap-8 md:gap-16">
+          <div className="flex flex-col gap-16 md:gap-24">
             {experiences.map((exp, i) => (
               <motion.div
                 key={exp.id}
                 initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
+                viewport={{ once: true, margin: "-50px" }}
                 transition={{ duration: 0.7, delay: i * 0.2 }}
-                className="relative"
+                className={`relative flex flex-col md:flex-row items-start md:items-center ${
+                  i % 2 === 0 ? "md:flex-row-reverse" : ""
+                }`}
               >
                 {/* Timeline dot */}
-                <div className="hidden md:block absolute -top-3 left-1/2 -translate-x-1/2 w-6 h-6 rounded-full border-2 border-[#4E85BF] bg-[#0a0a0a]">
+                <div className="absolute left-[31px] md:left-1/2 -translate-x-1/2 w-6 h-6 rounded-full border-2 border-[#4E85BF] bg-[#0a0a0a] z-10 top-2 md:top-auto">
                   <div className="absolute inset-1 rounded-full bg-[#4E85BF] animate-pulse" />
                 </div>
 
-                <div className="pt-8 md:pt-12">
-                  {/* Duration pill */}
-                  <div className="flex items-center gap-3 mb-4">
-                    <span className="text-[clamp(2rem,5vw,3.5rem)] font-black leading-none accent-gradient-text">
-                      {exp.duration === "Present" ? "Now" : exp.duration}
-                    </span>
-                  </div>
-
-                  {/* Role */}
-                  <h3 className="text-2xl md:text-3xl font-display italic text-white mb-2">
-                    {exp.role}
-                  </h3>
-
-                  {/* Date */}
-                  <span className="text-xs text-[#888] uppercase tracking-wider">
-                    {exp.startDate} — {exp.duration}
-                  </span>
-
-                  {/* Description */}
-                  <p className="text-[#888] text-sm leading-relaxed mt-4">
-                    {exp.description}
-                  </p>
-
-                  {/* Tech pills */}
-                  <div className="flex flex-wrap gap-2 mt-6">
-                    {exp.technologies.map((tech) => (
-                      <span key={tech} className="text-[10px] text-[#D7E2EA]/70 border border-[#D7E2EA]/15 rounded-full px-3 py-1.5 uppercase tracking-wider">
-                        {tech}
+                {/* Content side */}
+                <div className={`w-full md:w-1/2 pl-16 md:pl-0 ${
+                  i % 2 === 0 ? "md:pr-16 text-left md:text-right" : "md:pl-16 text-left"
+                }`}>
+                  <div className="pt-0">
+                    {/* Duration pill */}
+                    <div className={`flex items-center gap-3 mb-4 ${
+                      i % 2 === 0 ? "md:justify-end" : "md:justify-start"
+                    }`}>
+                      <span className="text-[clamp(2.5rem,4vw,3.5rem)] font-black leading-none accent-gradient-text">
+                        {exp.duration === "Present" ? "Now" : exp.duration}
                       </span>
-                    ))}
+                    </div>
+
+                    {/* Role & Company */}
+                    <h3 className="text-2xl md:text-3xl font-display italic text-white mb-1">
+                      {exp.role}
+                    </h3>
+                    <div className="text-lg text-[#89AACC] font-medium mb-3">
+                      {exp.company}
+                    </div>
+
+                    {/* Date */}
+                    <span className="text-xs text-[#888] uppercase tracking-wider block mb-4">
+                      {exp.startDate} — {exp.duration}
+                    </span>
+
+                    {/* Description */}
+                    <p className={`text-[#888] text-sm leading-relaxed ${
+                      i % 2 === 0 ? "md:ml-auto md:text-right" : ""
+                    }`}>
+                      {exp.description}
+                    </p>
+
+                    {/* Tech pills */}
+                    <div className={`flex flex-wrap gap-2 mt-6 ${
+                      i % 2 === 0 ? "md:justify-end" : "md:justify-start"
+                    }`}>
+                      {exp.technologies.map((tech) => (
+                        <span key={tech} className="text-[10px] text-[#D7E2EA]/70 border border-[#D7E2EA]/15 rounded-full px-3 py-1.5 uppercase tracking-wider">
+                          {tech}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 </div>
+                
+                {/* Empty side for layout balance */}
+                <div className="hidden md:block md:w-1/2" />
               </motion.div>
             ))}
           </div>
@@ -804,8 +842,8 @@ function HireSection() {
   };
 
   return (
-    <section id="hire" className="relative py-32 md:py-44 px-6 border-t border-[#1f1f1f] overflow-hidden">
-      <SectionVideoBg src="/assets/hire-bg.mp4" fallback="/assets/hire-bg.png" />
+    <section id="hire" className="relative py-32 md:py-44 px-6 overflow-hidden">
+      <NetworkBg />
 
       <div className="max-w-4xl mx-auto relative z-10">
         {/* Header */}
@@ -881,7 +919,7 @@ function HireSection() {
 
           {/* WhatsApp — Glass Card */}
           <a
-            href="https://wa.me/919521153320"
+            href="https://wa.me/919772777565"
             target="_blank"
             rel="noopener noreferrer"
             className="group rounded-3xl p-8 md:p-10 backdrop-blur-xl bg-white/[0.03] border border-white/[0.08] shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)] flex flex-col items-center justify-center text-center hover:border-[#25D366]/30 transition-all duration-500"
@@ -896,7 +934,7 @@ function HireSection() {
 
             <h3 className="text-xl text-white font-medium mb-2">Chat on WhatsApp</h3>
             <p className="text-[#888] text-sm mb-6">Instant response. Available 24/7.</p>
-            <span className="text-[#25D366] font-medium text-lg">+91 95211 53320</span>
+            <span className="text-[#25D366] font-medium text-lg">+91 97727 77565</span>
 
             <div className="mt-8 px-6 py-3 rounded-full border border-[#25D366]/30 text-[#25D366] text-sm font-medium group-hover:bg-[#25D366]/10 transition-colors">
               Open WhatsApp →
@@ -936,7 +974,7 @@ function SupportSection() {
         key: "rzp_live_SvrmXaDUtmpmTx",
         amount: amount * 100,
         currency,
-        name: "Support Amit",
+        name: "Support Mohit",
         description: "Thank you!",
         order_id,
         handler: async (response: any) => {
@@ -957,8 +995,8 @@ function SupportSection() {
   };
 
   return (
-    <section id="support" className="relative py-32 md:py-44 px-6 border-t border-[#1f1f1f] overflow-hidden">
-      <SectionVideoBg src="/assets/support-bg.mp4" fallback="/assets/support-bg.png" />
+    <section id="support" className="relative py-32 md:py-44 px-6 overflow-hidden">
+      <CoffeeBeansBg />
 
       <div className="max-w-lg mx-auto text-center relative z-10">
         {/* Header */}
@@ -1059,25 +1097,25 @@ function SocialDock() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   const socials = [
-    { name: "GitHub", href: "https://github.com/amitsaini-9", action: "link", icon: (
+    { name: "GitHub", href: "https://github.com/", action: "link", icon: (
       <svg viewBox="0 0 24 24" fill="currentColor" className="w-full h-full"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
     )},
-    { name: "LinkedIn", href: "https://www.linkedin.com/in/as-amit/", action: "link", icon: (
+    { name: "LinkedIn", href: "https://www.linkedin.com/in/mohitkumawat9/", action: "link", icon: (
       <svg viewBox="0 0 24 24" fill="currentColor" className="w-full h-full"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
     )},
-    { name: "Instagram", href: "https://www.instagram.com/__amit_saini_/", action: "link", icon: (
+    { name: "Instagram", href: "https://www.instagram.com/mohit_kumawat44/", action: "link", icon: (
       <svg viewBox="0 0 24 24" fill="currentColor" className="w-full h-full"><path d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.789.306-1.459.717-2.126 1.384S.935 3.35.63 4.14C.333 4.905.131 5.775.072 7.053.012 8.333 0 8.74 0 12s.015 3.667.072 4.947c.06 1.277.261 2.148.558 2.913.306.788.717 1.459 1.384 2.126.667.666 1.336 1.079 2.126 1.384.766.296 1.636.499 2.913.558C8.333 23.988 8.74 24 12 24s3.667-.015 4.947-.072c1.277-.06 2.148-.262 2.913-.558.788-.306 1.459-.718 2.126-1.384.666-.667 1.079-1.335 1.384-2.126.296-.765.499-1.636.558-2.913.06-1.28.072-1.687.072-4.947s-.015-3.667-.072-4.947c-.06-1.277-.262-2.149-.558-2.913-.306-.789-.718-1.459-1.384-2.126C21.319 1.347 20.651.935 19.86.63c-.765-.297-1.636-.499-2.913-.558C15.667.012 15.26 0 12 0zm0 2.16c3.203 0 3.585.016 4.85.071 1.17.055 1.805.249 2.227.415.562.217.96.477 1.382.896.419.42.679.819.896 1.381.164.422.36 1.057.413 2.227.057 1.266.07 1.646.07 4.85s-.015 3.585-.074 4.85c-.061 1.17-.256 1.805-.421 2.227-.224.562-.479.96-.899 1.382-.419.419-.824.679-1.38.896-.42.164-1.065.36-2.235.413-1.274.057-1.649.07-4.859.07-3.211 0-3.586-.015-4.859-.074-1.171-.061-1.816-.256-2.236-.421-.569-.224-.96-.479-1.379-.899-.421-.419-.69-.824-.9-1.38-.165-.42-.359-1.065-.42-2.235-.045-1.26-.061-1.649-.061-4.844 0-3.196.016-3.586.061-4.861.061-1.17.255-1.814.42-2.234.21-.57.479-.96.9-1.381.419-.419.81-.689 1.379-.898.42-.166 1.051-.361 2.221-.421 1.275-.045 1.65-.06 4.859-.06l.045.03zm0 3.678a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4zm7.846-10.405a1.441 1.441 0 11-2.88 0 1.441 1.441 0 012.88 0z"/></svg>
     )},
     { name: "Twitter", href: "https://x.com/AmitSaini9086", action: "link", icon: (
       <svg viewBox="0 0 24 24" fill="currentColor" className="w-full h-full"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
     )},
-    { name: "WhatsApp", href: "https://wa.me/919521153320", action: "link", icon: (
+    { name: "WhatsApp", href: "https://wa.me/919772777565", action: "link", icon: (
       <svg viewBox="0 0 24 24" fill="currentColor" className="w-full h-full"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
     )},
-    { name: "Call", href: "tel:+919521153320", action: "link", icon: (
+    { name: "Call", href: "tel:+919772777565", action: "link", icon: (
       <svg viewBox="0 0 24 24" fill="currentColor" className="w-full h-full"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
     )},
-    { name: "Email", href: "amitsainiwork9@gmail.com", action: "copy", icon: (
+    { name: "Email", href: "mohitkumawat23564@gmail.com", action: "copy", icon: (
       <svg viewBox="0 0 24 24" fill="currentColor" className="w-full h-full"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
     )},
   ];
@@ -1147,25 +1185,25 @@ function Footer() {
   const [copied, setCopied] = useState(false);
 
   const socials = [
-    { name: "GitHub", href: "https://github.com/amitsaini-9", action: "link", icon: (
+    { name: "GitHub", href: "https://github.com/", action: "link", icon: (
       <svg viewBox="0 0 24 24" fill="currentColor" className="w-full h-full"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
     )},
-    { name: "LinkedIn", href: "https://www.linkedin.com/in/as-amit/", action: "link", icon: (
+    { name: "LinkedIn", href: "https://www.linkedin.com/in/mohitkumawat9/", action: "link", icon: (
       <svg viewBox="0 0 24 24" fill="currentColor" className="w-full h-full"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
     )},
-    { name: "Instagram", href: "https://www.instagram.com/__amit_saini_/", action: "link", icon: (
+    { name: "Instagram", href: "https://www.instagram.com/mohit_kumawat44/", action: "link", icon: (
       <svg viewBox="0 0 24 24" fill="currentColor" className="w-full h-full"><path d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.789.306-1.459.717-2.126 1.384S.935 3.35.63 4.14C.333 4.905.131 5.775.072 7.053.012 8.333 0 8.74 0 12s.015 3.667.072 4.947c.06 1.277.261 2.148.558 2.913.306.788.717 1.459 1.384 2.126.667.666 1.336 1.079 2.126 1.384.766.296 1.636.499 2.913.558C8.333 23.988 8.74 24 12 24s3.667-.015 4.947-.072c1.277-.06 2.148-.262 2.913-.558.788-.306 1.459-.718 2.126-1.384.666-.667 1.079-1.335 1.384-2.126.296-.765.499-1.636.558-2.913.06-1.28.072-1.687.072-4.947s-.015-3.667-.072-4.947c-.06-1.277-.262-2.149-.558-2.913-.306-.789-.718-1.459-1.384-2.126C21.319 1.347 20.651.935 19.86.63c-.765-.297-1.636-.499-2.913-.558C15.667.012 15.26 0 12 0zm0 2.16c3.203 0 3.585.016 4.85.071 1.17.055 1.805.249 2.227.415.562.217.96.477 1.382.896.419.42.679.819.896 1.381.164.422.36 1.057.413 2.227.057 1.266.07 1.646.07 4.85s-.015 3.585-.074 4.85c-.061 1.17-.256 1.805-.421 2.227-.224.562-.479.96-.899 1.382-.419.419-.824.679-1.38.896-.42.164-1.065.36-2.235.413-1.274.057-1.649.07-4.859.07-3.211 0-3.586-.015-4.859-.074-1.171-.061-1.816-.256-2.236-.421-.569-.224-.96-.479-1.379-.899-.421-.419-.69-.824-.9-1.38-.165-.42-.359-1.065-.42-2.235-.045-1.26-.061-1.649-.061-4.844 0-3.196.016-3.586.061-4.861.061-1.17.255-1.814.42-2.234.21-.57.479-.96.9-1.381.419-.419.81-.689 1.379-.898.42-.166 1.051-.361 2.221-.421 1.275-.045 1.65-.06 4.859-.06l.045.03zm0 3.678a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4zm7.846-10.405a1.441 1.441 0 11-2.88 0 1.441 1.441 0 012.88 0z"/></svg>
     )},
     { name: "Twitter", href: "https://x.com/AmitSaini9086", action: "link", icon: (
       <svg viewBox="0 0 24 24" fill="currentColor" className="w-full h-full"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
     )},
-    { name: "WhatsApp", href: "https://wa.me/919521153320", action: "link", icon: (
+    { name: "WhatsApp", href: "https://wa.me/919772777565", action: "link", icon: (
       <svg viewBox="0 0 24 24" fill="currentColor" className="w-full h-full"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
     )},
-    { name: "Call", href: "tel:+919521153320", action: "link", icon: (
+    { name: "Call", href: "tel:+919772777565", action: "link", icon: (
       <svg viewBox="0 0 24 24" fill="currentColor" className="w-full h-full"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
     )},
-    { name: "Email", href: "amitsainiwork9@gmail.com", action: "copy", icon: (
+    { name: "Email", href: "mohitkumawat23564@gmail.com", action: "copy", icon: (
       <svg viewBox="0 0 24 24" fill="currentColor" className="w-full h-full"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
     )},
   ];
@@ -1212,10 +1250,10 @@ function Footer() {
 
         {/* Copyright and Links */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-          <span className="text-[#888] text-sm">© 2026 Amit Saini</span>
+          <span className="text-[#888] text-sm">© 2026 Mohit Kumawat</span>
           <div className="hidden md:flex items-center gap-6 text-[#888] text-sm">
-            <a href="mailto:hello@sainiamit.com" className="hover:text-white transition-colors">hello@sainiamit.com</a>
-            <a href="https://wa.me/919521153320" target="_blank" rel="noopener noreferrer" className="hover:text-[#25D366] transition-colors">
+            <a href="mailto:mohitkumawat23564@gmail.com" className="hover:text-white transition-colors">mohitkumawat23564@gmail.com</a>
+            <a href="https://wa.me/919772777565" target="_blank" rel="noopener noreferrer" className="hover:text-[#25D366] transition-colors">
               <WhatsAppIcon className="w-4 h-4" />
             </a>
           </div>

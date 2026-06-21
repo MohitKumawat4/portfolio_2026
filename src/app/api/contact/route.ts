@@ -33,8 +33,8 @@ export async function POST(request: NextRequest) {
 
     // Send email to both hello@sainiamit.com and amitsainiwork9@gmail.com
     await transporter.sendMail({
-      from: '"Amit Saini - Portfolio" <hello@sainiamit.com>',
-      to: "hello@sainiamit.com, amitsainiwork9@gmail.com",
+      from: '"Mohit Kumawat - Portfolio" <hello@sainiamit.com>',
+      to: "mohitkumawat23564@gmail.com",
       subject: `New hire inquiry from ${name}`,
       html: `
         <h2>New Contact</h2>
@@ -47,15 +47,15 @@ export async function POST(request: NextRequest) {
 
     // Send confirmation email to the user
     await transporter.sendMail({
-      from: '"Amit Saini" <hello@sainiamit.com>',
+      from: '"Mohit Kumawat" <hello@sainiamit.com>',
       to: email,
       subject: "Thanks for reaching out!",
       html: `
         <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;">
           <h1 style="color:#000;">Hey ${name}!</h1>
           <p>Thanks for getting in touch. I've received your message and will get back to you within 24 hours.</p>
-          <p>In the meantime, feel free to connect with me on <a href="https://wa.me/919521153320" style="color:#25D366;">WhatsApp</a>.</p>
-          <p>Best,<br><strong>Amit Saini</strong></p>
+          <p>In the meantime, feel free to connect with me on <a href="https://wa.me/919772777565" style="color:#25D366;">WhatsApp</a>.</p>
+          <p>Best,<br><strong>Mohit Kumawat</strong></p>
           <hr style="border:none;border-top:1px solid #eee;margin:20px 0;">
           <p style="color:#666;font-size:12px;">Software Developer | <a href="https://portfolio.sainiamit.com">portfolio.sainiamit.com</a></p>
         </div>
