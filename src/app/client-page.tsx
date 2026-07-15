@@ -445,13 +445,14 @@ function SkillsSection() {
                   {ring.map((skill, i) => {
                     const angle = (360 / ring.length) * i;
                     const rad = (angle * Math.PI) / 180;
-                    const x = radius + radius * Math.cos(rad) - 20;
-                    const y = radius + radius * Math.sin(rad) - 20;
+                    const x = (radius + radius * Math.cos(rad) - 20).toFixed(2);
+                    const y = (radius + radius * Math.sin(rad) - 20).toFixed(2);
                     return (
                       <div
                         key={skill.name}
                         className="absolute"
-                        style={{ left: x, top: y }}
+                        style={{ left: `${x}px`, top: `${y}px` }}
+                        suppressHydrationWarning
                       >
                         <div
                           className="orbit-icon w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-[#141414]/90 border border-[#2a2a3a] flex items-center justify-center relative cursor-pointer transition-all duration-300"
