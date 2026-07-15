@@ -183,6 +183,6 @@ export const seoConfig = {
   title: "Mohit Kumawat | Front-end Developer",
   description: "Portfolio of Mohit Kumawat — Front-end developer specializing in Next.js, React, and modern web development.",
   keywords: ["Mohit Kumawat", "Front-end Developer", "Web Developer", "Next.js", "React", "India"],
-  ogImage: "/logo.png",
+  ogImage: "/mk.png",
   siteUrl: "https://yourwebsite.com",
 };

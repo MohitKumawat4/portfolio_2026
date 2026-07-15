@@ -119,6 +119,11 @@ export const metadata: Metadata = {
     address: true,
     telephone: true,
   },
+  icons: {
+    icon: "/mk.png",
+    shortcut: "/mk.png",
+    apple: "/mk.png",
+  },
   other: {
     "google-adsense-account": "ca-pub-6830060544242264",
     "profile:first_name": "Amit",
@@ -144,7 +149,7 @@ export default function RootLayout({
     givenName: "Amit",
     familyName: "Saini",
     url: "https://sainiamit.com",
-    image: "https://sainiamit.com/logo.png",
+    image: "https://sainiamit.com/mk.png",
     jobTitle: "Full Stack Developer & AI Engineer",
     description: "Mohit Kumawat is a software engineer and full stack developer from Jaipur, Rajasthan, India specializing in web applications, AI integration, and SaaS platforms. This is the developer Mohit Kumawat, not the Haryanvi singer.",
     email: "mohitkumawat23564@gmail.com",
