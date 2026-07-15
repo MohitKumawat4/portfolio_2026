@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
-export const alt = "Amit Saini — Full Stack Developer & AI Engineer";
+export const alt = "Mohit Kumawat — Full Stack Developer & AI Engineer";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -42,7 +42,7 @@ export default async function Image() {
               color: "white",
             }}
           >
-            AS
+            MK
           </div>
           <h1
             style={{
@@ -53,7 +53,7 @@ export default async function Image() {
               textAlign: "center",
             }}
           >
-            Amit Saini
+            Mohit Kumawat
           </h1>
           <p
             style={{
@@ -83,7 +83,7 @@ export default async function Image() {
               textAlign: "center",
             }}
           >
-            sainiamit.com
+            mohitkumawat.in
           </p>
         </div>
       </div>
