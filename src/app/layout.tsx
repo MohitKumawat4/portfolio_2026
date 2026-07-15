@@ -3,8 +3,8 @@ import Script from "next/script";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://sainiamit.com"),
-  title: "Mohit Kumawat — Full Stack Developer & AI Engineer | sainiamit.com",
+  metadataBase: new URL("https://mohitkumawat.in"),
+  title: "Mohit Kumawat — Full Stack Developer & AI Engineer | mohitkumawat.in",
   description: "Mohit Kumawat is a Full Stack Developer & AI Engineer from India. Not the singer — the software engineer who builds custom web apps, AI chatbots, WhatsApp Business API integrations, and SaaS platforms. Hire for Next.js, React, Node.js, Python projects.",
   keywords: [
     "Mohit Kumawat developer",
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     "Mohit Kumawat web developer India",
     "Mohit Kumawat Jaipur",
     "Mohit Kumawat Rajasthan developer",
-    "sainiamit.com",
+    "mohitkumawat.in",
     "hire full stack developer India",
     "hire full stack developer Jaipur",
     "Next.js developer India",
@@ -82,7 +82,7 @@ export const metadata: Metadata = {
     "Photozoot AI engineer",
     "AI image enhancement developer",
   ],
-  authors: [{ name: "Mohit Kumawat", url: "https://sainiamit.com" }],
+  authors: [{ name: "Mohit Kumawat", url: "https://mohitkumawat.in" }],
   creator: "Mohit Kumawat",
   publisher: "Mohit Kumawat",
   robots: {
@@ -99,7 +99,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://sainiamit.com",
+    url: "https://mohitkumawat.in",
     siteName: "Mohit Kumawat — Full Stack Developer",
     title: "Mohit Kumawat — Full Stack Developer & AI Engineer",
     description: "Software engineer building web apps, AI integrations, and SaaS platforms. Not the singer — the developer. Based in India, available worldwide.",
@@ -111,7 +111,7 @@ export const metadata: Metadata = {
     creator: "@AmitSaini9086",
   },
   alternates: {
-    canonical: "https://sainiamit.com",
+    canonical: "https://mohitkumawat.in",
   },
   category: "Technology",
   formatDetection: {
@@ -143,13 +143,13 @@ export default function RootLayout({
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Person",
-    "@id": "https://sainiamit.com/#person",
+    "@id": "https://mohitkumawat.in/#person",
     name: "Mohit Kumawat",
     alternateName: ["Mohit Kumawat", "Sainiamit"],
     givenName: "Amit",
     familyName: "Saini",
-    url: "https://sainiamit.com",
-    image: "https://sainiamit.com/mk.png",
+    url: "https://mohitkumawat.in",
+    image: "https://mohitkumawat.in/mk.png",
     jobTitle: "Full Stack Developer & AI Engineer",
     description: "Mohit Kumawat is a software engineer and full stack developer from Jaipur, Rajasthan, India specializing in web applications, AI integration, and SaaS platforms. This is the developer Mohit Kumawat, not the Haryanvi singer.",
     email: "mohitkumawat23564@gmail.com",
@@ -201,20 +201,20 @@ export default function RootLayout({
   const websiteJsonLd = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    "@id": "https://sainiamit.com/#website",
-    url: "https://sainiamit.com",
+    "@id": "https://mohitkumawat.in/#website",
+    url: "https://mohitkumawat.in",
     name: "Mohit Kumawat — Full Stack Developer Portfolio",
     description: "Portfolio of Mohit Kumawat, a software engineer specializing in full stack development and AI engineering.",
-    publisher: { "@id": "https://sainiamit.com/#person" },
+    publisher: { "@id": "https://mohitkumawat.in/#person" },
     inLanguage: "en-US",
   };
 
   const servicesJsonLd = {
     "@context": "https://schema.org",
     "@type": "ProfessionalService",
-    "@id": "https://sainiamit.com/#services",
+    "@id": "https://mohitkumawat.in/#services",
     name: "Mohit Kumawat — Web Development Services",
-    provider: { "@id": "https://sainiamit.com/#person" },
+    provider: { "@id": "https://mohitkumawat.in/#person" },
     areaServed: { "@type": "Country", name: "Worldwide" },
     serviceType: "Software Development",
     hasOfferCatalog: {
@@ -234,7 +234,7 @@ export default function RootLayout({
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://sainiamit.com" },
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://mohitkumawat.in" },
     ],
   };
 
@@ -247,7 +247,7 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#0a0a0a" />
-        <link rel="canonical" href="https://sainiamit.com" />
+        <link rel="canonical" href="https://mohitkumawat.in" />
         <link rel="preconnect" href="https://stream.mux.com" />
         <link rel="preconnect" href="https://cdn.jsdelivr.net" />
         <link rel="preload" href="/assets/hero-poster.jpg" as="image" />
