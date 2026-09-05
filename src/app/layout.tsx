@@ -239,7 +239,7 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
@@ -248,8 +248,6 @@ export default function RootLayout({
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#0a0a0a" />
         <link rel="canonical" href="https://mohitkumawat.in" />
-        <link rel="preconnect" href="https://stream.mux.com" />
-        <link rel="preconnect" href="https://cdn.jsdelivr.net" />
         <link rel="preload" href="/assets/hero-poster.jpg" as="image" />
         <script
           type="application/ld+json"
@@ -268,7 +266,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
         />
       </head>
-      <body className="antialiased">
+      <body className="antialiased" suppressHydrationWarning>
         {/* Google Analytics */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-7HV4DPD268"

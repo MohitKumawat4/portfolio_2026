@@ -10,8 +10,9 @@ export async function POST(request: NextRequest) {
   try {
     const { amount, name, email } = await request.json();
 
-    if (!amount || amount < 100) {
-      return Response.json({ error: "Invalid amount" }, { status: 400 });
+    // Enforce minimum support amount of 10 INR
+    if (!amount || amount < 10) {
+      return Response.json({ error: "Minimum support amount is 10." }, { status: 400 });
     }
 
     const order = await razorpay.orders.create({

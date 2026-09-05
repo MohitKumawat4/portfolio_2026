@@ -171,9 +171,9 @@ function Navbar() {
   );
 }
 
-// Preload HLS video globally so it starts loading during the loading screen
-const MUX_STREAM = "https://stream.mux.com/Gs3wZfrtz6ZfqZqQ02c02Z7lugV00FGZvRpcqFTel66r3g.m3u8";
-const MUX_POSTER = "/assets/hero-poster.jpg";
+// Video Assets
+const HERO_VIDEO_SRC = "/assets/hero-bg.mp4";
+const HERO_POSTER = "/assets/hero-poster.jpg";
 
 // Hero Section
 function Hero() {
@@ -192,29 +192,39 @@ function Hero() {
     const video = videoRef.current;
     if (!video) return;
 
-    video.oncanplay = () => setVideoReady(true);
+    // Ensure audio is muted so browser autoplay policies are satisfied
+    video.muted = true;
+    video.defaultMuted = true;
 
-    if (video.canPlayType("application/vnd.apple.mpegurl")) {
-      video.src = MUX_STREAM;
-    } else {
-      import("hls.js").then(({ default: Hls }) => {
-        if (Hls.isSupported()) {
-          const hls = new Hls({ startLevel: 0, capLevelToPlayerSize: true });
-          hls.loadSource(MUX_STREAM);
-          hls.attachMedia(video);
-        }
-      });
+    const handleReady = () => {
+      setVideoReady(true);
+      video.play().catch(() => {});
+    };
+
+    video.addEventListener("loadeddata", handleReady);
+    video.addEventListener("canplay", handleReady);
+    video.addEventListener("playing", handleReady);
+
+    // If video is already ready (e.g. cached)
+    if (video.readyState >= 2) {
+      handleReady();
     }
+
+    return () => {
+      video.removeEventListener("loadeddata", handleReady);
+      video.removeEventListener("canplay", handleReady);
+      video.removeEventListener("playing", handleReady);
+    };
   }, []);
 
   return (
-    <section className="relative min-h-screen flex items-end bg-[#0a0a0a] overflow-hidden">
-      {/* Poster shown instantly while video loads */}
+    <section className="relative min-h-screen flex items-end bg-[#0a0a0a] overflow-hidden" suppressHydrationWarning>
+      {/* Poster shown instantly while video initializes */}
       <div
-        className={`absolute inset-0 z-0 bg-cover bg-center transition-opacity duration-1000 ${videoReady ? "opacity-0" : "opacity-100"}`}
-        style={{ backgroundImage: `url('${MUX_POSTER}')` }}
+        className={`absolute inset-0 z-0 bg-cover bg-center transition-opacity duration-700 ${videoReady ? "opacity-0" : "opacity-100"}`}
+        style={{ backgroundImage: `url('${HERO_POSTER}')` }}
       />
-      {/* HLS Video Background */}
+      {/* High-Performance Background Video */}
       <video
         ref={videoRef}
         autoPlay
@@ -222,23 +232,33 @@ function Hero() {
         muted
         playsInline
         preload="auto"
+        poster={HERO_POSTER}
+        onEnded={(e) => {
+          const v = e.currentTarget;
+          v.currentTime = 0;
+          v.play().catch(() => {});
+        }}
         onTimeUpdate={(e) => {
           const v = e.currentTarget;
-          // Fade to black in the last 1.2 seconds, and fade back in during the first 0.5 seconds
-          if (v.duration && v.duration - v.currentTime < 1.2) {
-            setIsFading(true);
-          } else if (v.currentTime < 0.5) {
-            setIsFading(true);
-          } else {
-            setIsFading(false);
+          // Smooth seamless loop cross-fade
+          if (v.duration && isFinite(v.duration)) {
+            if (v.duration - v.currentTime < 0.6) {
+              setIsFading(true);
+            } else if (v.currentTime < 0.3) {
+              setIsFading(true);
+            } else {
+              setIsFading(false);
+            }
           }
         }}
-        className={`absolute top-1/2 left-1/2 min-w-full min-h-full -translate-x-1/2 -translate-y-1/2 object-cover z-0 transition-opacity duration-1000 ${videoReady ? "opacity-100" : "opacity-0"}`}
-      />
+        className={`absolute top-1/2 left-1/2 min-w-full min-h-full -translate-x-1/2 -translate-y-1/2 object-cover z-0 transition-opacity duration-700 ${videoReady ? "opacity-100" : "opacity-0"}`}
+      >
+        <source src={HERO_VIDEO_SRC} type="video/mp4" />
+      </video>
       
       {/* Seamless Loop Fade Overlay */}
       <div 
-        className={`absolute inset-0 bg-[#0a0a0a] z-[1] pointer-events-none transition-opacity duration-[800ms] ease-in-out ${isFading ? "opacity-100" : "opacity-0"}`} 
+        className={`absolute inset-0 bg-[#0a0a0a] z-[1] pointer-events-none transition-opacity duration-500 ease-in-out ${isFading ? "opacity-100" : "opacity-0"}`} 
       />
       
       {/* Dark overlay */}
@@ -288,7 +308,7 @@ function Hero() {
 // About Section
 function About() {
   return (
-    <section id="about" className="relative py-20 md:py-28 px-6 border-t border-[#1f1f1f] overflow-hidden">
+    <section id="about" className="relative py-20 md:py-28 px-6 border-t border-[#1f1f1f] overflow-hidden" suppressHydrationWarning>
       <SectionVideoBg src="/assets/about-bg.mp4" fallback="/about-bg.png" />
 
       <div className="max-w-6xl mx-auto relative z-10">
@@ -396,7 +416,7 @@ function SkillsSection() {
   const orbitDurations = ["30s", "45s", "60s"];
 
   return (
-    <section id="skills" className="relative py-32 md:py-44 px-6 border-t border-[#1f1f1f] overflow-hidden">
+    <section id="skills" className="relative py-32 md:py-44 px-6 border-t border-[#1f1f1f] overflow-hidden" suppressHydrationWarning>
       <SectionVideoBg src="/assets/skills-bg.mp4" fallback="/assets/skills-bg.png" />
       <div className="max-w-6xl mx-auto relative z-10">
         {/* Header */}
@@ -501,7 +521,7 @@ function SkillsSection() {
 // Section video background — loops automatically
 function SectionVideoBg({ src, fallback }: { src: string; fallback?: string }) {
   return (
-    <>
+    <div className="absolute inset-0 pointer-events-none overflow-hidden" suppressHydrationWarning>
       <video
         autoPlay
         loop
@@ -514,7 +534,7 @@ function SectionVideoBg({ src, fallback }: { src: string; fallback?: string }) {
         <source src={src} type="video/mp4" />
       </video>
       <div className="absolute inset-0 z-0 bg-gradient-to-b from-[#0a0a0a] via-transparent to-[#0a0a0a]" />
-    </>
+    </div>
   );
 }
 
@@ -683,7 +703,7 @@ function Work() {
 // Experience Section — Immersive timeline
 function ExperienceSection() {
   return (
-    <section id="experience" className="relative py-32 md:py-44 px-6 border-t border-[#1f1f1f] overflow-hidden">
+    <section id="experience" className="relative py-32 md:py-44 px-6 border-t border-[#1f1f1f] overflow-hidden" suppressHydrationWarning>
       <SectionVideoBg src="/assets/experience-bg.mp4" fallback="/assets/experience-bg.png" />
 
       <div className="max-w-5xl mx-auto relative z-10">
@@ -813,37 +833,39 @@ function ExperienceSection() {
 // Hire Me Section
 function HireSection() {
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [message, setMessage] = useState("");
+  const [status, setStatus] = useState<"idle" | "success">("idle");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Handle message submission: formats the text and redirects directly to WhatsApp
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !email) return;
-    setStatus("loading");
-    try {
-      const res = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email }),
-      });
-      if (res.ok) {
-        setStatus("success");
-        setName("");
-        setEmail("");
-        analytics.trackContactFormSubmit(name, email);
-      }
-      else {
-        setStatus("error");
-        analytics.trackContactFormError("Server error");
-      }
-    } catch (error) {
-      setStatus("error");
-      analytics.trackContactFormError("Network error");
-    }
+    if (!message.trim()) return;
+
+    // Format pre-filled WhatsApp message
+    const formattedMessage = name.trim()
+      ? `Hi Mohit! My name is ${name.trim()}.\n\n${message.trim()}`
+      : message.trim();
+
+    // Construct official WhatsApp click-to-chat URL with encoded text
+    const whatsappUrl = `https://wa.me/919772777565?text=${encodeURIComponent(formattedMessage)}`;
+
+    // Open WhatsApp in a new tab/window
+    window.open(whatsappUrl, "_blank", "noopener,noreferrer");
+
+    // Track analytics event
+    analytics.trackContactFormSubmit(name || "Visitor", "whatsapp");
+
+    // Show temporary success feedback and clear form
+    setStatus("success");
+    setTimeout(() => {
+      setName("");
+      setMessage("");
+      setStatus("idle");
+    }, 4000);
   };
 
   return (
-    <section id="hire" className="relative py-32 md:py-44 px-6 overflow-hidden">
+    <section id="hire" className="relative py-32 md:py-44 px-6 overflow-hidden" suppressHydrationWarning>
       <NetworkBg />
 
       <div className="max-w-4xl mx-auto relative z-10">
@@ -860,7 +882,7 @@ function HireSection() {
             Hire Me
           </h2>
           <p className="text-[#888] mt-6 max-w-md mx-auto">
-            Drop your details and I'll get back to you within 24 hours.
+            Drop your message and connect with me directly on WhatsApp.
           </p>
         </motion.div>
 
@@ -872,53 +894,56 @@ function HireSection() {
           transition={{ duration: 0.7, delay: 0.2 }}
           className="grid md:grid-cols-2 gap-6"
         >
-          {/* Email Form — Glass Card */}
-          <div className="rounded-3xl p-8 md:p-10 backdrop-blur-xl bg-white/[0.03] border border-white/[0.08] shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]">
-            <div className="flex items-center gap-3 mb-8">
-              <div className="w-10 h-10 rounded-full bg-[#4E85BF]/20 flex items-center justify-center">
-                <Send className="w-5 h-5 text-[#89AACC]" />
-              </div>
-              <h3 className="text-lg text-white font-medium">Send a message</h3>
-            </div>
-
-            {status === "success" ? (
-              <div className="py-8 text-center">
-                <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-green-500/20 flex items-center justify-center">
-                  <Check className="w-7 h-7 text-green-400" />
+          {/* Direct WhatsApp Message Form — Glass Card */}
+          <div className="rounded-3xl p-8 md:p-10 backdrop-blur-xl bg-white/[0.03] border border-white/[0.08] shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)] flex flex-col justify-between">
+            <div>
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 rounded-full bg-[#4E85BF]/20 flex items-center justify-center">
+                  <Send className="w-5 h-5 text-[#89AACC]" />
                 </div>
-                <p className="text-white text-lg font-display italic">Sent! I'll contact you soon.</p>
+                <div>
+                  <h3 className="text-lg text-white font-medium">Send a message</h3>
+                  <p className="text-xs text-[#888]">Opens directly in WhatsApp with your message</p>
+                </div>
               </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="space-y-5">
-                <input
-                  type="text"
-                  placeholder="Your name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                  className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-5 py-4 text-white placeholder-white/30 focus:outline-none focus:border-[#4E85BF]/50 transition-colors"
-                />
-                <input
-                  type="email"
-                  placeholder="Your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-5 py-4 text-white placeholder-white/30 focus:outline-none focus:border-[#4E85BF]/50 transition-colors"
-                />
-                <button
-                  type="submit"
-                  disabled={status === "loading"}
-                  className="w-full px-7 py-4 bg-white text-black text-sm font-medium rounded-full hover:scale-[1.02] transition-transform disabled:opacity-50 flex items-center justify-center gap-2"
-                >
-                  {status === "loading" ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Send className="w-4 h-4" /> Send Message</>}
-                </button>
-                {status === "error" && <p className="text-red-400 text-sm text-center">Failed. Try again.</p>}
-              </form>
-            )}
+
+              {status === "success" ? (
+                <div className="py-8 text-center animate-fade-rise">
+                  <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-[#25D366]/20 flex items-center justify-center">
+                    <Check className="w-7 h-7 text-[#25D366]" />
+                  </div>
+                  <p className="text-white text-lg font-display italic">Redirected to WhatsApp!</p>
+                  <p className="text-[#888] text-xs mt-2">Just tap Send in your WhatsApp chat.</p>
+                </div>
+              ) : (
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <input
+                    type="text"
+                    placeholder="Your name (optional)"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-5 py-3.5 text-white placeholder-white/30 focus:outline-none focus:border-[#4E85BF]/50 transition-colors text-sm"
+                  />
+                  <textarea
+                    placeholder="Type your message or project idea here..."
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    required
+                    rows={3}
+                    className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-5 py-3.5 text-white placeholder-white/30 focus:outline-none focus:border-[#4E85BF]/50 transition-colors text-sm resize-none"
+                  />
+                  <button
+                    type="submit"
+                    className="w-full px-7 py-4 bg-white text-black text-sm font-medium rounded-full hover:scale-[1.02] active:scale-[0.98] transition-transform flex items-center justify-center gap-2 cursor-pointer shadow-lg hover:shadow-white/10"
+                  >
+                    <Send className="w-4 h-4" /> Send Message via WhatsApp
+                  </button>
+                </form>
+              )}
+            </div>
           </div>
 
-          {/* WhatsApp — Glass Card */}
+          {/* WhatsApp Quick Chat — Glass Card */}
           <a
             href="https://wa.me/919772777565"
             target="_blank"
@@ -953,13 +978,24 @@ function SupportSection() {
   const [selected, setSelected] = useState<number | null>(null);
   const [custom, setCustom] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  // Compute active amount (selected preset or custom entry)
   const getAmount = () => selected || parseInt(custom) || 0;
+  
+  // Real-time check if user typed a value below 10
+  const customNum = custom.trim() !== "" ? Number(custom) : null;
+  const isBelowMin = customNum !== null && !isNaN(customNum) && customNum < 10;
 
   const handlePay = async () => {
     const amount = getAmount();
-    if (!amount) return;
+    if (!amount || amount < 10) {
+      setErrorMessage("Minimum support amount is 10.");
+      setStatus("error");
+      return;
+    }
     setStatus("loading");
+    setErrorMessage(null);
     analytics.trackSupportClick(amount);
     try {
       const res = await fetch("/api/support/create-order", {
@@ -967,7 +1003,12 @@ function SupportSection() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ amount }),
       });
-      if (!res.ok) throw new Error();
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        setErrorMessage(errorData.error || "Payment failed. Try again.");
+        setStatus("error");
+        return;
+      }
       const { order_id, currency } = await res.json();
       analytics.trackPaymentInitiated(amount);
 
@@ -990,13 +1031,19 @@ function SupportSection() {
         modal: { ondismiss: () => setStatus("idle") },
         theme: { color: "#4E85BF" },
       });
-      rzp.on("payment.failed", () => setStatus("error"));
+      rzp.on("payment.failed", () => {
+        setErrorMessage("Payment failed or cancelled. Try again.");
+        setStatus("error");
+      });
       rzp.open();
-    } catch { setStatus("error"); }
+    } catch {
+      setErrorMessage("Unable to connect to payment gateway. Try again.");
+      setStatus("error");
+    }
   };
 
   return (
-    <section id="support" className="relative py-32 md:py-44 px-6 overflow-hidden">
+    <section id="support" className="relative py-32 md:py-44 px-6 overflow-hidden" suppressHydrationWarning>
       <CoffeeBeansBg />
 
       <div className="max-w-lg mx-auto text-center relative z-10">
@@ -1053,8 +1100,8 @@ function SupportSection() {
               {amounts.map((amt) => (
                 <button
                   key={amt}
-                  onClick={() => { setSelected(amt); setCustom(""); }}
-                  className={`py-3.5 rounded-xl text-sm font-medium border transition-all duration-300 ${
+                  onClick={() => { setSelected(amt); setCustom(""); setErrorMessage(null); }}
+                  className={`py-3.5 rounded-xl text-sm font-medium border transition-all duration-300 cursor-pointer ${
                     selected === amt
                       ? "border-[#89AACC] text-white bg-[#89AACC]/15 shadow-[0_0_15px_rgba(137,170,204,0.2)]"
                       : "border-white/[0.08] text-[#888] bg-white/[0.02] hover:border-[#89AACC]/40 hover:text-white"
@@ -1066,25 +1113,51 @@ function SupportSection() {
             </div>
 
             {/* Custom input */}
-            <input
-              type="number"
-              placeholder="Custom amount (₹)"
-              value={custom}
-              onChange={(e) => { const val = e.target.value; if (Number(val) <= 100000) { setCustom(val); setSelected(null); } }}
-              min="1"
-              max="100000"
-              className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-5 py-4 text-white placeholder-white/30 focus:outline-none focus:border-[#89AACC]/50 transition-colors mb-6"
-            />
+            <div className="mb-6">
+              <input
+                type="number"
+                placeholder="Custom amount (min ₹10)"
+                value={custom}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (Number(val) <= 100000) {
+                    setCustom(val);
+                    setSelected(null);
+                    setErrorMessage(null);
+                  }
+                }}
+                min="10"
+                max="100000"
+                className={`w-full bg-white/[0.04] border rounded-xl px-5 py-4 text-white placeholder-white/30 focus:outline-none transition-colors ${
+                  isBelowMin ? "border-amber-500/60 focus:border-amber-500" : "border-white/[0.08] focus:border-[#89AACC]/50"
+                }`}
+              />
+              {isBelowMin && (
+                <p className="text-amber-400 text-xs mt-2 text-left animate-fade-rise">
+                  Minimum support amount is 10.
+                </p>
+              )}
+            </div>
 
             {/* Pay button */}
             <button
               onClick={handlePay}
-              disabled={status === "loading" || !getAmount()}
-              className="w-full px-7 py-4 rounded-full font-medium text-sm flex items-center justify-center gap-2 transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed bg-gradient-to-r from-[#89AACC] to-[#4E85BF] text-white hover:shadow-[0_0_30px_rgba(137,170,204,0.3)] hover:scale-[1.02]"
+              disabled={status === "loading" || !getAmount() || getAmount() < 10}
+              className="w-full px-7 py-4 rounded-full font-medium text-sm flex items-center justify-center gap-2 transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed bg-gradient-to-r from-[#89AACC] to-[#4E85BF] text-white hover:shadow-[0_0_30px_rgba(137,170,204,0.3)] hover:scale-[1.02] cursor-pointer"
             >
-              {status === "loading" ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Heart className="w-4 h-4" /> Support {getAmount() > 0 ? `₹${getAmount().toLocaleString()}` : ""}</>}
+              {status === "loading" ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <>
+                  <Heart className="w-4 h-4" /> Support {getAmount() >= 10 ? `₹${getAmount().toLocaleString()}` : ""}
+                </>
+              )}
             </button>
-            {status === "error" && <p className="text-red-400 text-sm mt-4">Payment failed. Try again.</p>}
+            {status === "error" && (
+              <p className="text-red-400 text-sm mt-4 animate-fade-rise">
+                {errorMessage || "Payment failed. Try again."}
+              </p>
+            )}
           </motion.div>
         )}
       </div>
